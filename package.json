@@ -17,6 +17,7 @@
     "binary": "bun build --compile src/cli.ts --outfile beep"
   },
   "dependencies": {
+    "@beeper/desktop-api": "^4.2.3",
     "commander": "^14.0.0",
     "kleur": "^4.1.5"
   },

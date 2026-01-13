@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { BeeperClient } from "../src/lib/client.js";
+import { getClient, BeeperDesktop } from "../src/index.js";
 
 describe("BeeperClient", () => {
-	it("should create client with default URL", () => {
-		const client = new BeeperClient();
+	it("should create client with getClient()", () => {
+		const client = getClient();
 		expect(client).toBeDefined();
+		expect(client).toBeInstanceOf(BeeperDesktop);
 	});
 
-	it("should create client with custom URL", () => {
-		const client = new BeeperClient("http://localhost:9999");
-		expect(client).toBeDefined();
+	it("should export BeeperDesktop class", () => {
+		expect(BeeperDesktop).toBeDefined();
 	});
 });

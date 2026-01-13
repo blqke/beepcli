@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import kleur from "kleur";
+import type { ChatListResponse } from "../lib/client.js";
 import { getClient } from "../lib/client.js";
 
 export const chatsCommand = new Command("chats")
@@ -11,9 +12,21 @@ export const chatsCommand = new Command("chats")
 			const client = getClient();
 			const limit = Number.parseInt(options.limit, 10);
 
-			const chats = options.search
-				? await client.searchChats(options.search)
-				: await client.listChats(limit);
+			const chats: ChatListResponse[] = [];
+
+			if (options.search) {
+				// Search chats
+				for await (const chat of client.chats.search({ query: options.search })) {
+					chats.push(chat as ChatListResponse);
+					if (chats.length >= limit) break;
+				}
+			} else {
+				// List chats
+				for await (const chat of client.chats.list()) {
+					chats.push(chat);
+					if (chats.length >= limit) break;
+				}
+			}
 
 			if (chats.length === 0) {
 				console.log(kleur.yellow("No chats found."));
@@ -25,7 +38,7 @@ export const chatsCommand = new Command("chats")
 			console.log(kleur.bold(`\n${title} (${chats.length})\n`));
 
 			for (const chat of chats) {
-				const name = kleur.bold(chat.title || "Unknown");
+				const name = kleur.bold(chat.title || chat.description || "Unknown");
 				const network = kleur.dim(`[${chat.network || chat.accountID}]`);
 				const unread = chat.unreadCount ? kleur.red(` (${chat.unreadCount} unread)`) : "";
 

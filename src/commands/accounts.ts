@@ -7,7 +7,7 @@ export const accountsCommand = new Command("accounts")
 	.action(async () => {
 		try {
 			const client = getClient();
-			const accounts = await client.listAccounts();
+			const accounts = await client.accounts.list();
 
 			if (accounts.length === 0) {
 				console.log(kleur.yellow("No accounts connected."));
@@ -18,7 +18,7 @@ export const accountsCommand = new Command("accounts")
 			console.log(kleur.bold(`\n📱 Connected Accounts (${accounts.length})\n`));
 
 			for (const account of accounts) {
-				const name = account.user?.fullName || account.user?.displayText || account.accountID;
+				const name = account.user?.fullName || account.user?.username || account.accountID;
 				const network = kleur.cyan(account.network);
 				console.log(`  ${network} ${kleur.bold(name)}`);
 				console.log(kleur.dim(`    ID: ${account.accountID}\n`));

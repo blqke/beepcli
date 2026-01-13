@@ -1,3 +1,6 @@
 // Library exports
-export { BeeperClient } from "./lib/client.js";
-export type { Account, AccountUser, Chat, ChatPreview, Message } from "./lib/types.js";
+
+// Re-export the SDK client
+export { default as BeeperDesktop } from "@beeper/desktop-api";
+export type { Account, Chat, ChatListResponse, Message } from "./lib/client.js";
+export { getClient } from "./lib/client.js";

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@beeper/desktop-api':
+        specifier: ^4.2.3
+        version: 4.2.3
       commander:
         specifier: ^14.0.0
         version: 14.0.2
@@ -32,6 +35,9 @@ importers:
         version: 4.0.17(@types/node@22.19.6)(tsx@4.21.0)
 
 packages:
+
+  '@beeper/desktop-api@4.2.3':
+    resolution: {integrity: sha512-b5dKEKK6FzbAWRmh6udLxAt1QB1vEtLcBScWdDnMXdVA/rIkpd67LTJz+7KJDa/RQnzOL2zxcDNAC4b7OZpSZw==}
 
   '@biomejs/biome@2.3.11':
     resolution: {integrity: sha512-/zt+6qazBWguPG6+eWmiELqO+9jRsMZ/DBU3lfuU2ngtIQYzymocHhKiZRyrbra4aCOoyTg/BmY+6WH5mv9xmQ==}
@@ -616,6 +622,8 @@ packages:
     hasBin: true
 
 snapshots:
+
+  '@beeper/desktop-api@4.2.3': {}
 
   '@biomejs/biome@2.3.11':
     optionalDependencies:

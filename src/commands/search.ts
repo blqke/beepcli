@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import kleur from "kleur";
+import type { Chat, Message } from "../lib/client.js";
 import { getClient } from "../lib/client.js";
 
 export const searchCommand = new Command("search")
@@ -13,31 +14,43 @@ export const searchCommand = new Command("search")
 
 			console.log(kleur.dim(`Searching for "${query}"...`));
 
-			const results = await client.search(query);
+			// Search messages
+			const messages: Message[] = [];
+			for await (const msg of client.messages.search({ query })) {
+				messages.push(msg);
+				if (messages.length >= limit) break;
+			}
 
-			if (results.messages.length === 0 && results.chats.length === 0) {
+			// Search chats
+			const chats: Chat[] = [];
+			for await (const chat of client.chats.search({ query })) {
+				chats.push(chat);
+				if (chats.length >= 5) break;
+			}
+
+			if (messages.length === 0 && chats.length === 0) {
 				console.log(kleur.yellow(`\nNo results found for "${query}"`));
 				return;
 			}
 
 			// Show matching chats
-			if (results.chats.length > 0) {
-				console.log(kleur.bold(`\n💬 Matching Chats (${results.chats.length})\n`));
-				for (const chat of results.chats.slice(0, 5)) {
-					console.log(`  ${kleur.bold(chat.title || "Unknown")}`);
+			if (chats.length > 0) {
+				console.log(kleur.bold(`\n💬 Matching Chats (${chats.length})\n`));
+				for (const chat of chats) {
+					console.log(`  ${kleur.bold(chat.title || chat.description || "Unknown")}`);
 					console.log(kleur.dim(`    ID: ${chat.id}\n`));
 				}
 			}
 
 			// Show matching messages
-			if (results.messages.length > 0) {
-				console.log(kleur.bold(`\n📨 Matching Messages (${results.messages.length})\n`));
-				for (const msg of results.messages.slice(0, limit)) {
+			if (messages.length > 0) {
+				console.log(kleur.bold(`\n📨 Matching Messages (${messages.length})\n`));
+				for (const msg of messages) {
 					const sender = msg.senderName || msg.senderID;
 					const time = new Date(msg.timestamp).toLocaleString();
 
 					console.log(`  ${kleur.cyan(sender)} ${kleur.dim(`• ${time}`)}`);
-					console.log(`  ${highlightQuery(msg.text, query)}`);
+					console.log(`  ${highlightQuery(msg.text || "", query)}`);
 					console.log(kleur.dim(`    Chat: ${msg.chatID}\n`));
 				}
 			}
