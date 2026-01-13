@@ -3,6 +3,9 @@ import kleur from "kleur";
 import type { ChatListResponse } from "../lib/client.js";
 import { getClient } from "../lib/client.js";
 
+// Visual separators
+const SEPARATOR = kleur.dim("─".repeat(50));
+
 export const chatsCommand = new Command("chats")
 	.description("List recent chats")
 	.option("-l, --limit <number>", "Number of chats to show", "20")
@@ -35,22 +38,29 @@ export const chatsCommand = new Command("chats")
 
 			const title = options.search ? `🔍 Chats matching "${options.search}"` : "💬 Recent Chats";
 
-			console.log(kleur.bold(`\n${title} (${chats.length})\n`));
+			console.log(kleur.bold(`\n${title} (${chats.length})`));
+			console.log(SEPARATOR);
 
-			for (const chat of chats) {
+			for (let i = 0; i < chats.length; i++) {
+				const chat = chats[i];
+				const num = kleur.dim(`${i + 1}.`);
 				const name = kleur.bold(chat.title || chat.description || "Unknown");
 				const network = kleur.dim(`[${chat.network || chat.accountID}]`);
 				const unread = chat.unreadCount ? kleur.red(` (${chat.unreadCount} unread)`) : "";
 
-				console.log(`  ${name} ${network}${unread}`);
-				console.log(kleur.dim(`    ID: ${chat.id}`));
+				console.log(`${num} ${name} ${network}${unread}`);
+				console.log(kleur.dim(`   ID: ${chat.id}`));
 
 				if (chat.preview?.text) {
 					const preview = truncate(chat.preview.text, 50);
-					console.log(kleur.dim(`    Last: ${preview}`));
+					console.log(kleur.dim(`   💬 ${preview}`));
 				}
-				console.log();
+				
+				if (i < chats.length - 1) {
+					console.log(SEPARATOR);
+				}
 			}
+			console.log();
 		} catch (error) {
 			handleError(error);
 		}
