@@ -18,6 +18,13 @@ export const searchCommand = new Command("search")
 
 			console.log(kleur.dim(`Searching for "${query}"...`));
 
+			// Fetch accounts to build accountID -> network map
+			const accounts = await client.accounts.list();
+			const networkMap = new Map<string, string>();
+			for (const account of accounts) {
+				networkMap.set(account.accountID, account.network || account.accountID);
+			}
+
 			// Search messages
 			const messages: Message[] = [];
 			for await (const msg of client.messages.search({ query })) {
@@ -61,9 +68,10 @@ export const searchCommand = new Command("search")
 					const msg = messages[i];
 					const num = kleur.dim(`${i + 1}.`);
 					const sender = msg.senderName || msg.senderID;
+					const network = networkMap.get(msg.accountID) || msg.accountID;
 					const time = new Date(msg.timestamp).toLocaleString();
 
-					console.log(`${num} ${kleur.cyan(sender)} ${kleur.dim(`• ${time}`)}`);
+					console.log(`${num} ${kleur.cyan(sender)} ${kleur.dim(`[${network}]`)} ${kleur.dim(`• ${time}`)}`);
 					console.log(`   ${highlightQuery(msg.text || "", query)}`);
 					console.log(kleur.dim(`   📁 ${msg.chatID}`));
 					
