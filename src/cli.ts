@@ -3,6 +3,7 @@ import { program } from "commander";
 import kleur from "kleur";
 // Commands
 import { accountsCommand } from "./commands/accounts.js";
+import { aliasCommand } from "./commands/alias.js";
 import { authCommand } from "./commands/auth.js";
 import { chatsCommand } from "./commands/chats.js";
 import { searchCommand } from "./commands/search.js";
@@ -16,6 +17,7 @@ program
 
 // Register commands
 program.addCommand(authCommand);
+program.addCommand(aliasCommand);
 program.addCommand(accountsCommand);
 program.addCommand(chatsCommand);
 program.addCommand(sendCommand);

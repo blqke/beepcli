@@ -5,6 +5,7 @@ import { join } from "node:path";
 export interface BeeperConfig {
 	token?: string;
 	baseUrl?: string;
+	aliases?: Record<string, string>;
 }
 
 const CONFIG_DIR = join(homedir(), ".config", "beepcli");

@@ -1,19 +1,28 @@
 import { Command } from "commander";
 import kleur from "kleur";
 import { getClient } from "../lib/client.js";
+import { getConfig } from "../lib/config.js";
+import { resolveAlias } from "../lib/aliases.js";
 
 export const sendCommand = new Command("send")
 	.description("Send a message to a chat")
-	.argument("<chat-id>", "Chat ID to send message to (or 'myself' for Note to self)")
+	.argument("<chat-id>", "Chat ID, alias, or 'myself' for Note to self")
 	.argument("<message>", "Message text to send")
 	.option("-q, --quiet", "Don't show confirmation")
 	.option("-r, --reply-to <message-id>", "Reply to a specific message")
 	.action(async (chatId: string, message: string, options) => {
 		try {
 			const client = getClient();
+			const config = getConfig();
 
-			// Handle 'myself' keyword
-			if (chatId.toLowerCase() === "myself") {
+			// Try to resolve alias
+			const resolved = resolveAlias(chatId, config);
+
+			if (resolved) {
+				// Alias found or direct chat ID
+				chatId = resolved;
+			} else if (chatId.toLowerCase() === "myself") {
+				// Fallback for 'myself' if not configured as alias
 				const chats = [];
 				for await (const chat of client.chats.search({ query: "note to self" })) {
 					chats.push(chat);
@@ -27,6 +36,11 @@ export const sendCommand = new Command("send")
 				}
 
 				chatId = chats[0].id;
+			} else {
+				// Not an alias, not 'myself', not a direct chat ID
+				console.error(kleur.red(`❌ Chat '${chatId}' not found`));
+				console.error(kleur.dim(`   Use chat ID directly or add alias: beep alias add ${chatId} <chatId>`));
+				process.exit(1);
 			}
 
 			const sent = await client.messages.send(chatId, {

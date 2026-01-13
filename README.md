@@ -34,11 +34,19 @@ beep auth set <your-token>
 export BEEPER_TOKEN=<your-token>
 ```
 
+## Configuration
+
+Config stored at `~/.config/beepcli/config.json` with token, base URL, and aliases.
+
+**Precedence:** Environment variables (`BEEPER_TOKEN`, `BEEPER_URL`) override config file.
+
 ## Usage
 
 ```bash
-# Check auth status
-beep auth show
+# Auth management
+beep auth show           # Check auth status
+beep auth set <token>    # Set API token
+beep auth clear          # Clear stored token
 
 # List connected accounts
 beep accounts
@@ -48,14 +56,65 @@ beep chats
 beep chats --limit 50
 beep chats --search "John"
 
-# Search messages
+# Search messages and chats
 beep search "meeting tomorrow"
+beep search "deadline" --limit 10
+beep search "deadline" --chat work --sender me --after "1d ago"
+beep search "photo" --media image video
+beep search "discussion" --chat-type group --before "yesterday"
 
-# Send a message
+# Send messages
 beep send <chat-id> "Hello!"
 beep send myself "Quick note"  # Send to yourself
 beep send <chat-id> "Thanks!" --reply-to <message-id>  # Reply to message
+
+# Alias management (shortcuts for chat IDs)
+beep alias list                    # List all aliases
+beep alias add work <chat-id>      # Create alias
+beep alias show work               # Show alias value
+beep alias remove work             # Remove alias
+beep send work "Using alias!"      # Use alias in commands
 ```
+
+### Search Filters
+
+Filter search results with multiple options:
+
+```bash
+# Filter by chat (supports aliases, space or comma-separated)
+beep search "hello" --chat work family
+beep search "test" --chat id1,id2,id3
+
+# Filter by time range (relative dates)
+beep search "meeting" --after "1d ago" --before "1h ago"
+beep search "report" --after "yesterday"
+
+# Filter by sender
+beep search "question" --sender me        # Only my messages
+beep search "update" --sender others      # Messages from others
+
+# Filter by media type
+beep search "screenshot" --media image
+beep search "files" --media file link
+
+# Filter by chat type
+beep search "announcement" --chat-type group
+beep search "dm" --chat-type single
+
+# Filter by account
+beep search "slack message" --account <account-id>
+
+# Combine filters
+beep search "deploy" --chat work --sender others --after "1d ago" --media link
+
+# Include/exclude options
+beep search "todo" --include-low-priority
+beep search "important" --exclude-muted
+```
+
+**Time formats:** `1h ago`, `2d ago`, `3w ago`, `1mo ago`, `yesterday`, `today`
+
+**Media types:** `any`, `video`, `image`, `link`, `file`
 
 ## Development
 
@@ -81,27 +140,32 @@ pnpm binary
 
 ```
 src/
-├── cli.ts           # Entry point
+├── cli.ts           # Entry point - command registration
 ├── index.ts         # Library exports
 ├── version.ts       # Version info
 ├── commands/        # CLI commands
-│   ├── accounts.ts
-│   ├── chats.ts
-│   ├── search.ts
-│   └── send.ts
+│   ├── auth.ts      # Token management
+│   ├── accounts.ts  # List accounts
+│   ├── chats.ts     # Browse chats
+│   ├── search.ts    # Search messages/chats
+│   ├── send.ts      # Send messages
+│   └── alias.ts     # Alias management
 └── lib/             # Core logic
-    ├── client.ts    # Beeper API client
-    └── types.ts     # TypeScript types
+    ├── client.ts    # Beeper API client wrapper
+    ├── config.ts    # Config file management (~/.config/beepcli/)
+    ├── aliases.ts   # Alias resolution utilities
+    └── dates.ts     # Relative date parsing
 ```
 
 ## Stack
 
 - **TypeScript** with plain `tsc`
-- **Commander** for CLI args
-- **Kleur** for colors
+- **Commander** for CLI framework
+- **Kleur** for colors/styling
 - **Vitest** for testing
-- **Biome** for linting/formatting
+- **Biome** + **oxlint** for linting/formatting
 - **Bun** for standalone binary compilation
+- **@beeper/desktop-api** SDK
 
 ## License
 
