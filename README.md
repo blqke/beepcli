@@ -175,6 +175,10 @@ src/
 - **Bun** for standalone binary compilation
 - **@beeper/desktop-api** SDK
 
+## Acknowledgments
+
+Inspired by [beeper-cli](https://github.com/krausefx/beeper-cli) by [@krausefx](https://github.com/krausefx).
+
 ## License
 
 MIT
