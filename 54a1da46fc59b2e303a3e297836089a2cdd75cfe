@@ -1,0 +1,21 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.40",
+  "base_commit_sha": "54a1da46fc59b2e303a3e297836089a2cdd75cfe",
+  "prompts": {
+    "c8398af505b06c57": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_3e4c43070ffeNfbAzaCpTSU2c6",
+        "model": "anthropic/claude-opus-4-5"
+      },
+      "human_author": "Jules LIBERT <jules.lib@gmail.com>",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 1,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}
