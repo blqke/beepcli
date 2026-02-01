@@ -57,6 +57,8 @@
     "chat",
     "terminal",
     "matrix",
-    "clawdbot"
+    "clawdbot",
+    "moltbot",
+    "openclaw"
   ]
 }
