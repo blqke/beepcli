@@ -139,7 +139,15 @@ function getAttachmentMxcUrl(attachment: unknown): string | undefined {
 	if (!attachment || typeof attachment !== "object") return undefined;
 
 	const entry = attachment as Record<string, unknown>;
-	const candidates = [entry.url, entry.mxcUrl, entry.mxc, entry.contentUrl, entry.sourceUrl];
+	const candidates = [
+		entry.url,
+		entry.mxcUrl,
+		entry.mxc,
+		entry.contentUrl,
+		entry.sourceUrl,
+		entry.srcURL,
+		entry.id,
+	];
 
 	for (const candidate of candidates) {
 		if (
