@@ -97,7 +97,16 @@ beepctl messages <chat-id>                    # List recent messages
 beepctl messages <chat-id> --limit 20         # Limit results
 beepctl messages <chat-id> --after "1d ago"   # Messages after a time
 beepctl messages <chat-id> --before "1h ago"  # Messages before a time
+beepctl messages <chat-id> --json             # JSON output (includes attachment mxc URLs)
 beepctl messages work                         # Use alias
+```
+
+Download attachments from recent messages with `jq`:
+
+```bash
+beepctl messages <chat-id> --limit 50 --json \
+  | jq -r '.[].attachments[]?.mxcUrl | select(startswith("mxc://") or startswith("localmxc://"))' \
+  | while read -r url; do beepctl download "$url"; done
 ```
 
 ### Search

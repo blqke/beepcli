@@ -18,6 +18,7 @@ export const messagesCommand = new Command("messages")
 	.option("-l, --limit <number>", "Maximum messages to show", "20")
 	.option("--after <date>", "Messages after date (e.g., '1d ago', 'yesterday')")
 	.option("--before <date>", "Messages before date (e.g., '1h ago', 'today')")
+	.option("--json", "Output messages as JSON")
 	.action(async (chatIdArg: string, options) => {
 		try {
 			const client = getClient();
@@ -38,13 +39,8 @@ export const messagesCommand = new Command("messages")
 			if (options.after) filterParts.push(`after: ${options.after}`);
 			if (options.before) filterParts.push(`before: ${options.before}`);
 			const filters = filterParts.length > 0 ? kleur.dim(` [${filterParts.join(", ")}]`) : "";
-			console.log(kleur.dim(`Listing messages from chat ${chatID}${filters}...`));
-
-			// Build accountID -> network map
-			const accounts = await client.accounts.list();
-			const networkMap = new Map<string, string>();
-			for (const account of accounts) {
-				networkMap.set(account.accountID, account.network || account.accountID);
+			if (!options.json) {
+				console.log(kleur.dim(`Listing messages from chat ${chatID}${filters}...`));
 			}
 
 			// Fetch messages with client-side date filtering
@@ -58,11 +54,28 @@ export const messagesCommand = new Command("messages")
 			}
 
 			if (messages.length === 0) {
+				if (options.json) {
+					console.log("[]");
+					return;
+				}
+
 				console.log(kleur.yellow(`\nNo messages found in chat ${chatID}`));
 				if (options.after || options.before) {
 					console.log(kleur.dim("   Try adjusting the date filters"));
 				}
 				return;
+			}
+
+			if (options.json) {
+				console.log(JSON.stringify(messages.map(formatMessageForJson), null, 2));
+				return;
+			}
+
+			// Build accountID -> network map
+			const accounts = await client.accounts.list();
+			const networkMap = new Map<string, string>();
+			for (const account of accounts) {
+				networkMap.set(account.accountID, account.network || account.accountID);
 			}
 
 			console.log(kleur.bold(`\nMessages (${messages.length})`));
@@ -96,7 +109,9 @@ function printMessage(msg: Message, index: number, networkMap: Map<string, strin
 			const icon = getAttachmentIcon(att.type);
 			const size = att.fileSize ? ` (${formatSize(att.fileSize)})` : "";
 			const name = att.fileName || att.type || "attachment";
-			console.log(kleur.dim(`   ${icon} ${name}${size}`));
+			const mxcUrl = getAttachmentMxcUrl(att);
+			const url = mxcUrl ? ` ${mxcUrl}` : "";
+			console.log(kleur.dim(`   ${icon} ${name}${size}${url}`));
 		}
 	}
 
@@ -118,4 +133,44 @@ function getAttachmentIcon(type?: string): string {
 		default:
 			return "att";
 	}
+}
+
+function getAttachmentMxcUrl(attachment: unknown): string | undefined {
+	if (!attachment || typeof attachment !== "object") return undefined;
+
+	const entry = attachment as Record<string, unknown>;
+	const candidates = [
+		entry.url,
+		entry.mxcUrl,
+		entry.mxc,
+		entry.contentUrl,
+		entry.sourceUrl,
+		entry.srcURL,
+		entry.id,
+	];
+
+	for (const candidate of candidates) {
+		if (
+			typeof candidate === "string" &&
+			(candidate.startsWith("mxc://") || candidate.startsWith("localmxc://"))
+		) {
+			return candidate;
+		}
+	}
+
+	return undefined;
+}
+
+function formatMessageForJson(msg: Message): Message {
+	return {
+		...msg,
+		attachments: msg.attachments?.map((att) => formatAttachmentForJson(att)),
+	};
+}
+
+function formatAttachmentForJson(att: NonNullable<Message["attachments"]>[number]) {
+	return {
+		...att,
+		mxcUrl: getAttachmentMxcUrl(att),
+	};
 }
