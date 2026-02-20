@@ -97,6 +97,7 @@ beepctl messages <chat-id>                    # List recent messages
 beepctl messages <chat-id> --limit 20         # Limit results
 beepctl messages <chat-id> --after "1d ago"   # Messages after a time
 beepctl messages <chat-id> --before "1h ago"  # Messages before a time
+beepctl messages <chat-id> --json             # JSON output (includes attachment mxc URLs)
 beepctl messages work                         # Use alias
 ```
 
