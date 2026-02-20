@@ -153,14 +153,16 @@ function getAttachmentMxcUrl(attachment: unknown): string | undefined {
 	return undefined;
 }
 
-function formatMessageForJson(
-	msg: Message,
-): Message & { attachments?: Array<Record<string, unknown>> } {
+function formatMessageForJson(msg: Message): Message {
 	return {
 		...msg,
-		attachments: msg.attachments?.map((att) => ({
-			...(att as Record<string, unknown>),
-			mxcUrl: getAttachmentMxcUrl(att),
-		})),
+		attachments: msg.attachments?.map((att) => formatAttachmentForJson(att)),
+	};
+}
+
+function formatAttachmentForJson(att: NonNullable<Message["attachments"]>[number]) {
+	return {
+		...att,
+		mxcUrl: getAttachmentMxcUrl(att),
 	};
 }
