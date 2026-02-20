@@ -16,3 +16,6 @@ beep
 
 # Logs
 *.log
+
+# Local agent state
+.serena/
