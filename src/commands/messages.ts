@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import kleur from "kleur";
 import type { Message } from "../lib/client.js";
-import { getClient } from "../lib/client.js";
+import { getAccountNetwork, getClient } from "../lib/client.js";
 import {
 	formatSize,
 	handleCommandError,
@@ -75,7 +75,7 @@ export const messagesCommand = new Command("messages")
 			const accounts = await client.accounts.list();
 			const networkMap = new Map<string, string>();
 			for (const account of accounts) {
-				networkMap.set(account.accountID, account.network || account.accountID);
+				networkMap.set(account.accountID, getAccountNetwork(account));
 			}
 
 			console.log(kleur.bold(`\nMessages (${messages.length})`));

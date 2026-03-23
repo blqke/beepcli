@@ -1,0 +1,56 @@
+import { Command } from "commander";
+import kleur from "kleur";
+import { getClient } from "../lib/client.js";
+import {
+	handleCommandError,
+	resolveChatIdOrExit,
+	WRITE_PERMISSION_ERROR_HANDLER,
+} from "../lib/command-utils.js";
+import { getConfig } from "../lib/config.js";
+
+export const reactCommand = new Command("react")
+	.description("Add or remove your reaction on an existing message")
+	.argument("<chat-id>", "Chat ID or alias")
+	.argument("<message-id>", "Message ID to react to")
+	.argument("<reaction-key>", "Reaction key (emoji, shortcode, or custom emoji key)")
+	.option("--remove", "Remove your reaction instead of adding it")
+	.option("-q, --quiet", "Don't show confirmation")
+	.action(async (chatIdArg: string, messageId: string, reactionKey: string, options) => {
+		try {
+			const client = getClient();
+			const config = getConfig();
+			const chatID = resolveChatIdOrExit(chatIdArg, config);
+
+			if (options.remove) {
+				const removed = await client.chats.messages.reactions.delete(messageId, {
+					chatID,
+					reactionKey,
+				});
+
+				if (!options.quiet) {
+					console.log(kleur.green("Reaction removed"));
+					console.log(kleur.dim(`   Chat: ${removed.chatID}`));
+					console.log(kleur.dim(`   Message: ${removed.messageID}`));
+					console.log(kleur.dim(`   Reaction: ${removed.reactionKey}`));
+				}
+				return;
+			}
+
+			const added = await client.chats.messages.reactions.add(messageId, {
+				chatID,
+				reactionKey,
+			});
+
+			if (!options.quiet) {
+				console.log(kleur.green("Reaction added"));
+				console.log(kleur.dim(`   Chat: ${added.chatID}`));
+				console.log(kleur.dim(`   Message: ${added.messageID}`));
+				console.log(kleur.dim(`   Reaction: ${added.reactionKey}`));
+				if (added.transactionID) {
+					console.log(kleur.dim(`   Transaction: ${added.transactionID}`));
+				}
+			}
+		} catch (error) {
+			handleCommandError(error, [WRITE_PERMISSION_ERROR_HANDLER]);
+		}
+	});

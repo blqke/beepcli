@@ -2,7 +2,7 @@ import { Command } from "commander";
 import kleur from "kleur";
 import { resolveAlias } from "../lib/aliases.js";
 import { getClient } from "../lib/client.js";
-import { handleCommandError } from "../lib/command-utils.js";
+import { handleCommandError, WRITE_PERMISSION_ERROR_HANDLER } from "../lib/command-utils.js";
 import { getConfig } from "../lib/config.js";
 
 export const sendCommand = new Command("send")
@@ -32,13 +32,7 @@ export const sendCommand = new Command("send")
 				}
 			}
 		} catch (error) {
-			handleCommandError(error, [
-				{
-					match: "403",
-					message: "Permission denied",
-					hint: "Enable write permissions: Settings -> Developers -> Edit token -> Enable 'write' scope",
-				},
-			]);
+			handleCommandError(error, [WRITE_PERMISSION_ERROR_HANDLER]);
 		}
 	});
 

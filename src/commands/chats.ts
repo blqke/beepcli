@@ -2,7 +2,7 @@ import { Command } from "commander";
 import kleur from "kleur";
 import { isValidChatId, resolveAlias } from "../lib/aliases.js";
 import type { ChatListResponse } from "../lib/client.js";
-import { getClient } from "../lib/client.js";
+import { getChatDescription, getChatNetwork, getClient } from "../lib/client.js";
 import { getConfig } from "../lib/config.js";
 import { parseRelativeDate } from "../lib/dates.js";
 import { handleError } from "../lib/errors.js";
@@ -65,10 +65,11 @@ chatsCommand
 			console.log(`${kleur.dim("ID:")}          ${chat.id}`);
 			console.log(`${kleur.dim("Title:")}       ${chat.title || "(none)"}`);
 			console.log(`${kleur.dim("Type:")}        ${chat.type}`);
-			console.log(`${kleur.dim("Network:")}     ${chat.network}`);
+			console.log(`${kleur.dim("Network:")}     ${getChatNetwork(chat)}`);
 			console.log(`${kleur.dim("Account:")}     ${chat.accountID}`);
-			if (chat.description) {
-				console.log(`${kleur.dim("Description:")} ${chat.description}`);
+			const description = getChatDescription(chat);
+			if (description) {
+				console.log(`${kleur.dim("Description:")} ${description}`);
 			}
 			console.log(SEPARATOR);
 			console.log(`${kleur.dim("Unread:")}      ${chat.unreadCount}`);
@@ -254,8 +255,8 @@ function printChatList(
 	for (let i = 0; i < chats.length; i++) {
 		const chat = chats[i];
 		const num = kleur.dim(`${i + 1}.`);
-		const name = kleur.bold(chat.title || chat.description || "Unknown");
-		const network = kleur.dim(`[${chat.network || chat.accountID}]`);
+		const name = kleur.bold(chat.title || getChatDescription(chat) || "Unknown");
+		const network = kleur.dim(`[${getChatNetwork(chat)}]`);
 		const unread = chat.unreadCount ? kleur.red(` (${chat.unreadCount} unread)`) : "";
 
 		console.log(`${num} ${name} ${network}${unread}`);

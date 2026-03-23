@@ -11,6 +11,7 @@ import { contactsCommand } from "./commands/contacts.js";
 import { downloadCommand } from "./commands/download.js";
 import { focusCommand } from "./commands/focus.js";
 import { messagesCommand } from "./commands/messages.js";
+import { reactCommand } from "./commands/react.js";
 import { remindersCommand } from "./commands/reminders.js";
 import { searchCommand } from "./commands/search.js";
 import { sendCommand } from "./commands/send.js";
@@ -29,6 +30,7 @@ program
 	.addCommand(downloadCommand)
 	.addCommand(focusCommand)
 	.addCommand(messagesCommand)
+	.addCommand(reactCommand)
 	.addCommand(remindersCommand)
 	.addCommand(sendCommand)
 	.addCommand(searchCommand)
