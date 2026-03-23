@@ -2,7 +2,7 @@ import { Command } from "commander";
 import kleur from "kleur";
 import { isValidChatId, resolveAlias } from "../lib/aliases.js";
 import type { Chat, Message } from "../lib/client.js";
-import { getClient } from "../lib/client.js";
+import { getAccountNetwork, getChatDescription, getClient } from "../lib/client.js";
 import {
 	handleCommandError,
 	highlightQuery,
@@ -68,7 +68,7 @@ export const searchCommand = new Command("search")
 			const accounts = await client.accounts.list();
 			const networkMap = new Map<string, string>();
 			for (const account of accounts) {
-				networkMap.set(account.accountID, account.network || account.accountID);
+				networkMap.set(account.accountID, getAccountNetwork(account));
 			}
 
 			// Build search params
@@ -237,7 +237,7 @@ function printChats(chats: Chat[]): void {
 	for (let i = 0; i < chats.length; i++) {
 		const chat = chats[i];
 		const num = kleur.dim(`${i + 1}.`);
-		console.log(`${num} ${kleur.bold(chat.title || chat.description || "Unknown")}`);
+		console.log(`${num} ${kleur.bold(chat.title || getChatDescription(chat) || "Unknown")}`);
 		console.log(kleur.dim(`   ID: ${chat.id}`));
 		if (i < chats.length - 1) console.log(THIN_SEP);
 	}

@@ -236,6 +236,20 @@ beepctl reminders set <chat-id> tomorrow # Remind tomorrow
 beepctl reminders clear <chat-id>        # Clear reminder
 ```
 
+### React to Messages
+
+Add or remove emoji reactions on messages:
+
+```bash
+beepctl react <chat-id> <message-id> 👍                # React with emoji
+beepctl react <chat-id> <message-id> thumbsup          # React with shortcode
+beepctl react <chat-id> <message-id> custom_emoji_key   # React with custom emoji key
+beepctl react <chat-id> <message-id> 👍 --remove        # Remove your reaction
+beepctl react work <message-id> ❤️                      # Use alias
+```
+
+`<reaction-key>` can be an emoji character, a shortcode (e.g. `thumbsup`), or a custom emoji key. `--remove` removes the authenticated user's reaction for that key — it cannot remove other users' reactions.
+
 ## Development
 
 ```bash

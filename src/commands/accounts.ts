@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import kleur from "kleur";
-import { getClient } from "../lib/client.js";
+import { getAccountNetwork, getClient } from "../lib/client.js";
 import { handleError } from "../lib/errors.js";
 
 export const accountsCommand = new Command("accounts")
@@ -20,7 +20,7 @@ export const accountsCommand = new Command("accounts")
 
 			for (const account of accounts) {
 				const name = account.user?.fullName || account.user?.username || account.accountID;
-				console.log(`  ${kleur.cyan(account.network)} ${kleur.bold(name)}`);
+				console.log(`  ${kleur.cyan(getAccountNetwork(account))} ${kleur.bold(name)}`);
 				console.log(kleur.dim(`    ID: ${account.accountID}\n`));
 			}
 		} catch (error) {

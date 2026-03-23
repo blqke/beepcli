@@ -39,6 +39,12 @@ export function validateDateRangeOrExit(dateAfter: string, dateBefore: string): 
 	}
 }
 
+export const WRITE_PERMISSION_ERROR_HANDLER: ErrorHandler = {
+	match: "403",
+	message: "Permission denied",
+	hint: "Enable write permissions: Settings -> Developers -> Edit token -> Enable 'write' scope",
+};
+
 /**
  * Standard error handler for command actions.
  */
@@ -69,7 +75,7 @@ export function handleCommandError(error: unknown, extraHandlers?: ErrorHandler[
 	process.exit(1);
 }
 
-interface ErrorHandler {
+export interface ErrorHandler {
 	match: string;
 	message: string;
 	hint?: string;
