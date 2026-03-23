@@ -8,6 +8,19 @@ import {
 } from "../lib/command-utils.js";
 import { getConfig } from "../lib/config.js";
 
+type ReactionMutationResponse = {
+	chatID: string;
+	messageID: string;
+	reactionKey: string;
+	success: true;
+	transactionID?: string;
+};
+
+function getReactionPath(chatID: string, messageID: string): string {
+	return `/v1/chats/${encodeURIComponent(chatID)}/messages/${encodeURIComponent(messageID)}/reactions`;
+}
+
+
 export const reactCommand = new Command("react")
 	.description("Add or remove your reaction on an existing message")
 	.argument("<chat-id>", "Chat ID or alias")
@@ -22,10 +35,10 @@ export const reactCommand = new Command("react")
 			const chatID = resolveChatIdOrExit(chatIdArg, config);
 
 			if (options.remove) {
-				const removed = await client.chats.messages.reactions.delete(messageId, {
-					chatID,
-					reactionKey,
-				});
+				const removed = await client.delete<ReactionMutationResponse>(
+					getReactionPath(chatID, messageId),
+					{ query: { reactionKey } },
+				);
 
 				if (!options.quiet) {
 					console.log(kleur.green("Reaction removed"));
@@ -36,10 +49,10 @@ export const reactCommand = new Command("react")
 				return;
 			}
 
-			const added = await client.chats.messages.reactions.add(messageId, {
-				chatID,
-				reactionKey,
-			});
+			const added = await client.post<ReactionMutationResponse>(
+				getReactionPath(chatID, messageId),
+				{ body: { reactionKey } },
+			);
 
 			if (!options.quiet) {
 				console.log(kleur.green("Reaction added"));
