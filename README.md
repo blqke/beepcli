@@ -1,3 +1,5 @@
+
+
 # beepctl 🐝
 
 [![npm version](https://img.shields.io/npm/v/beepctl.svg)](https://www.npmjs.com/package/beepctl)
@@ -287,6 +289,7 @@ src/
 │   ├── download.ts  # Download attachments
 │   ├── focus.ts     # Bring Beeper to foreground
 │   ├── messages.ts  # List messages in a chat
+│   ├── react.ts     # Add/remove reactions
 │   ├── reminders.ts # Chat reminders
 │   ├── search.ts    # Search messages/chats
 │   └── send.ts      # Send messages
